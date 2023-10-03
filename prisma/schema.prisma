@@ -1,0 +1,265 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id             String   @id @default(auto()) @map("_id") @db.ObjectId
+  username        String   @unique
+  email          String   @unique
+  hashedPassword String
+  profile        Profile?
+
+  posts    Post[]
+  comments Comment[]
+  likes    Like[]
+  notifications Notification[]
+  reposts  Repost[]
+
+  groupIds String[] @db.ObjectId
+  groups   Group[]  @relation(fields: [groupIds], references: [id])
+
+  role    Role     @default(USER)
+  friends Friend[]
+
+  friendRequestsSent     FriendRequest[] @relation("friendRequestSent")
+  friendRequestsReceived FriendRequest[] @relation("friendRequestsReceived")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Profile {
+  id              String    @id @default(auto()) @map("_id") @db.ObjectId
+  firstName       String
+  lastName        String
+  profileImageUrl String?
+  coverImageUrl   String?
+  bio             String?
+  address         String?
+  phone           String?
+  dob             DateTime?
+  isVerified      Boolean   @default(false)
+  profileViews    Int 
+  userId String @unique @db.ObjectId
+  user   User   @relation(fields: [userId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+
+  createdAt DateTime? @default(now())
+  updatedAt DateTime? @updatedAt
+ 
+  @@index([firstName, lastName, userId])
+}
+
+model Post {
+  id      String  @id @default(auto()) @map("_id") @db.ObjectId
+  text    String
+  privacy Privacy
+
+  userId String @db.ObjectId
+  user   User   @relation(fields: [userId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+
+  groupId String? @db.ObjectId
+  group   Group?  @relation(fields: [groupId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+
+  images   Image[]
+  videos   Video[]
+  comments Comment[]
+  likes    Like[]
+  notifications Notification[]
+  reposts  Repost[]
+
+  createdAt DateTime? @default(now())
+  updatedAt DateTime? @updatedAt
+
+   @@index([userId, groupId, text])
+}
+
+model Repost {
+  id      String  @id @default(auto()) @map("_id") @db.ObjectId
+  text    String
+  userId String @db.ObjectId
+  user   User   @relation(fields: [userId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+
+  postId String @db.ObjectId
+  post   Post  @relation(fields: [postId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+
+  comments Comment[]
+  likes    Like[]
+
+  createdAt DateTime? @default(now())
+  updatedAt DateTime? @updatedAt
+
+   @@index([userId, postId])
+}
+
+model Image {
+  id       String @id @default(auto()) @map("_id") @db.ObjectId
+  imageUrl String
+
+  postId String @db.ObjectId
+  post   Post   @relation(fields: [postId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+
+  createdAt DateTime? @default(now())
+  updatedAt DateTime? @updatedAt
+
+   @@index([postId])
+}
+
+model Video {
+  id        String @id @default(auto()) @map("_id") @db.ObjectId
+  videosUrl String
+  videoViews Int
+
+  postId String @db.ObjectId
+  post   Post   @relation(fields: [postId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+
+  createdAt DateTime? @default(now())
+  updatedAt DateTime? @updatedAt
+
+   @@index([postId])
+}
+
+model Comment {
+  id       String  @id @default(auto()) @map("_id") @db.ObjectId
+  text     String
+  imageUrl String?
+
+  userId String @db.ObjectId
+  user   User   @relation(fields: [userId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+
+  postId String @db.ObjectId
+  post   Post   @relation(fields: [postId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+
+  repostId String  @db.ObjectId
+  repost   Repost   @relation(fields: [repostId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+
+  likes Like[]
+
+  createdAt DateTime? @default(now())
+  updatedAt DateTime? @updatedAt
+
+   @@index([postId, userId])
+}
+
+model Like {
+  id       String       @id @default(auto()) @map("_id") @db.ObjectId
+  text     String
+  reaction LikeReaction @default(LIKE)
+
+  userId String @db.ObjectId
+  user   User   @relation(fields: [userId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+
+  postId    String?  @db.ObjectId
+  post      Post?    @relation(fields: [postId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  commentId String?  @db.ObjectId
+  comment   Comment? @relation(fields: [commentId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  repostId String?    @db.ObjectId
+  repost   Repost?    @relation(fields: [repostId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+
+  createdAt DateTime? @default(now())
+  updatedAt DateTime? @updatedAt
+
+   @@index([postId, commentId])
+}
+
+model Group {
+  id       String @id @default(auto()) @map("_id") @db.ObjectId
+  name     String
+  imageUrl String
+  posts    Post[]
+
+  memberIds String[] @db.ObjectId
+  members   User[]   @relation(fields: [memberIds], references: [id])
+
+  createdAt DateTime? @default(now())
+  updatedAt DateTime? @updatedAt
+
+   @@index([memberIds, name])
+}
+
+model Friend {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+
+  userId          String @db.ObjectId
+  friendUsersIds String @db.ObjectId
+  friends   User   @relation(fields: [friendUsersIds], references: [id], onUpdate: Cascade, onDelete: Cascade)
+
+  createdAt DateTime? @default(now())
+  updatedAt DateTime? @updatedAt
+
+   @@index([friendUsersIds])
+}
+
+model FriendRequest {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+
+  senderId   String @db.ObjectId
+  sender     User   @relation("friendRequestSent", fields: [senderId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  receiverId String @db.ObjectId
+  receiver   User   @relation("friendRequestsReceived", fields: [receiverId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+
+  status     RequestStatus @default(PENDING)
+
+  createdAt DateTime? @default(now())
+  updatedAt DateTime? @updatedAt
+
+  @@index([senderId, receiverId])
+}
+
+model Notification {
+  id           String     @id @default(auto()) @map("_id") @db.ObjectId
+  type         NotificationType
+  content      String
+  isRead       Boolean    @default(false)
+  
+  userId       String     @db.ObjectId
+  user         User       @relation(fields: [userId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  
+  relatedPostId String?   @db.ObjectId
+  relatedPost  Post?      @relation(fields: [relatedPostId], references: [id], onUpdate: Cascade, onDelete: SetNull)
+  
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+}
+
+enum NotificationType {
+  FRIEND_REQUEST
+  NEW_POST
+  COMMENT_ON_POST
+  LIKE_ON_POST
+
+}
+
+
+enum Role {
+  ADMIN
+  USER
+  GUEST
+}
+
+enum LikeReaction {
+  LIKE
+  LOVE
+  HAHA
+  WOW
+  SAD
+  ANGRY
+}
+
+enum Privacy {
+  FRIENDS
+  PRIVATE
+  PUBLIC
+}
+
+enum RequestStatus {
+  PENDING
+  ACCEPTED
+}
