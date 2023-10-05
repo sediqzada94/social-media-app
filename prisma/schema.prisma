@@ -16,6 +16,7 @@ model User {
   email          String   @unique
   hashedPassword String
   profile        Profile?
+  gender         Gender
 
   posts    Post[]
   comments Comment[]
@@ -262,4 +263,9 @@ enum Privacy {
 enum RequestStatus {
   PENDING
   ACCEPTED
+}
+
+enum Gender {
+  MALE
+  FEMALE
 }
