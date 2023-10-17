@@ -1,4 +1,4 @@
-import Posts from "@/components/Posts";
+import Posts from "@/components/post/Posts";
 import CreatePost from "@/components/create-post";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
