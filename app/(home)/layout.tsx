@@ -16,7 +16,7 @@ const HomeLayout = ({
                 <div className="hidden lg:flex mt-16 h-full w-72 flex-col fixed inset-y-0 z-50">
                     <Sidebar />
                 </div>
-                <main className=" md:px-80 mt-16 p-8 h-full min-w-max">
+                <main className=" md:pl-72 pr-80 mt-16 h-full">
                     {children}
                 </main>
                 <div className="hidden md:flex h-full w-80 flex-col fixed right-0 top-16 z-50">

@@ -17,9 +17,9 @@ import {
 
 const CustomCard = ({cardTitle, cardDescription, children }: CustomCardProps) => {
   return (
-    <Card className='border-none mb-3 bg-slate-50 rounded-md'>
+    <Card className='border-none mb-1 rounded-md'>
     <CardHeader>
-      <CardTitle className='text-lg font-bold'>{ cardTitle }</CardTitle>
+      <CardTitle className='text-lg font-semibold'>{ cardTitle }</CardTitle>
       <CardDescription> { cardDescription } </CardDescription>
     </CardHeader>
     <CardContent>

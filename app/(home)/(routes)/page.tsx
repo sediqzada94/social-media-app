@@ -1,11 +1,14 @@
+import Posts from "@/components/Posts";
+import CreatePost from "@/components/create-post";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 
 export default async function Home() {
 
   return (
-    <div  className=" rounded-lg">
-        Home page
+    <div  className=" min-h-screen z-0">
+      <CreatePost />
+      <Posts />
     </div>
   );
 }

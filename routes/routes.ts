@@ -70,3 +70,27 @@ export const groupRoutes = [
   },
  
 ]
+
+export const navbarRoutes = [
+  {
+      icon: Home,
+      label: "Home",
+      link: "/"
+    },
+  {
+    icon: Video,
+    label: "Videos",
+    link: "/videos"
+  },
+  {
+    icon: Users,
+    label: "Groups",
+    link: "/groups"
+  },
+  {
+    icon: Users,
+    label: "Friends",
+    link: "/friends"
+  }
+
+]
