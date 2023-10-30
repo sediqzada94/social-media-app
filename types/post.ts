@@ -1,11 +1,10 @@
-import { Post, Profile, User } from "@prisma/client";
-import { type } from "os";
+import {  Post, Profile, User, Like, Comment, Repost } from "@prisma/client";
 
-
-
-
-export type PostWithUserWithProfile = Post & {
+export type PostWithData = Post & {
         user: User & {
-            profile: Profile
-        }
+            profile: Profile | null
+        },
+        likes: Like[] | [],
+        comments: Comment[] | [],
+        reposts: Repost[] | []
 }

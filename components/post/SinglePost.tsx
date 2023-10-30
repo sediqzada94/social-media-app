@@ -6,17 +6,13 @@ import { Button } from '../ui/button'
 import { MoreHorizontal } from 'lucide-react'
 import ActionButton from '../ActionButton'
 import PostActions from './PostActions'
+import { PostWithData } from '@/types/post'
 
-type PostWithUserWithProfile = Post & {
-  user: User & {
-    profile: Profile | null
-  }
-}
 
-const SinglePost = ({ post }: { post: PostWithUserWithProfile}) => {
+const SinglePost = ({ post }: { post: PostWithData}) => {
   return (
     <section
-    className='pt-4 px-8 space-y-2 hover:bg-slate-50 transition duration-150 border-b hover:cursor-pointer'>
+    className='pt-4 pb-2 px-8 space-y-2 hover:bg-slate-50 transition duration-150 border-b hover:cursor-pointer'>
         <div className='flex justify-between'>
             <div className='flex gap-x-4 items-center'>
                 <div className='p-2 rounded-full bg-slate-200'>
